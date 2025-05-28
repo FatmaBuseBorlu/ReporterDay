@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ReporterDay.DataAccessLayer.Abstract
+namespace ReporterDay.BusinessLayer.Abstract
 {
-    public interface SliderDal : IGenericDal<Slider>
+    public interface ISliderService:IGenericService<Slider>
     {
     }
 }

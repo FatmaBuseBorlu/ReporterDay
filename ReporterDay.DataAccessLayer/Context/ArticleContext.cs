@@ -12,7 +12,7 @@ namespace ReporterDay.DataAccessLayer.Context
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            base.OnConfiguring(optionsBuilder);
+            optionsBuilder.UseSqlServer("DESKTOP-NBRMDOS;initial catalog=ReporterBlogDayDb;integrated security=true;trust server certificate=true");
         }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Article> Articles { get; set; }

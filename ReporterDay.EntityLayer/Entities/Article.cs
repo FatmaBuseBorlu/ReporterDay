@@ -8,7 +8,7 @@ namespace ReporterDay.EntityLayer.Entities
 {
     public class Article
     {
-        public int ArtıcleId { get; set; }
+        public int ArticleId { get; set; }
         public string Title { get; set; }           
         public DateTime CreateDate { get; set; }
         public string Content { get; set; }
