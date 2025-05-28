@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ReporterDay.DataAccessLayer.Abstract
 {
-    internal interface SliderDal : IGenericDal<Slider>
+    public interface SliderDal : IGenericDal<Slider>
     {
     }
 }

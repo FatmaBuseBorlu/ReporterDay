@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ReporterDay.DataAccessLayer.Abstract
 {
-    internal interface ITag : IGenericDal<Tag>
+    public interface ITag : IGenericDal<Tag>
     {
     }
 }
