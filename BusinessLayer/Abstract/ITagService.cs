@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ReporterDay.BusinessLayer.Abstract
 {
-    public interface ITagService:IGenericService<Tag>
+    public interface ITagService : IGenericService<Tag>
     {
     }
 }

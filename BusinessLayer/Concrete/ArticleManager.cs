@@ -34,7 +34,7 @@ namespace ReporterDay.BusinessLayer.Concrete
 
         public void TInsert(Article entity)
         {
-            if(entity.Title!=null&& entity.Title.Length>10&& entity.CategoryId != 0 && entity.Content.Length <= 1000)
+            if (entity.Title != null && entity.Title.Length > 10 && entity.CategoryId != 0 && entity.Content.Length <= 1000)
             {
                 _articleDal.Insert(entity);
             }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ReporterDay.DataAccessLayer.EntityFramework
 {
-    internal class EfCategoryDal : GenericRepository<Category>, ICategoryDal
+    public class EfCategoryDal : GenericRepository<Category>, ICategoryDal
     {
         public EfCategoryDal(ArticleContext context) : base(context)
         {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ReporterDay.BusinessLayer.Abstract
 {
-    public interface ISliderService:IGenericService<Slider>
+    public interface ISliderService : IGenericService<Slider>
     {
     }
 }

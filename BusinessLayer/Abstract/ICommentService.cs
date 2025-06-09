@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ReporterDay.BusinessLayer.Abstract
 {
-    public interface ICommentService:IGenericService<Comment>
+    public interface ICommentService : IGenericService<Comment>
     {
     }
 }

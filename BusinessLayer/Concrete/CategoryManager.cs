@@ -50,6 +50,10 @@ namespace ReporterDay.BusinessLayer.Concrete
             {
                 _categoryDal.Update(entity);
             }
+            else
+            {
+                //hata mesajı
+            }
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ReporterDay.BusinessLayer.Abstract
 {
-    public interface IGenericService<T> where T: class
+    public interface IGenericService<T> where T : class
     {
         void TInsert(T entity);
         void TUpdate(T entity);
