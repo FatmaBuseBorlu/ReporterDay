@@ -55,5 +55,10 @@ namespace ReporterDay.BusinessLayer.Concrete
                 //hata mesajı
             }
         }
+
+        public int TGetCategoryCount()
+        {
+            return _categoryDal.GetCategoryCount();
+        }
     }
 }

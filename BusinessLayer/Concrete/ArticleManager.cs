@@ -48,5 +48,9 @@ namespace ReporterDay.BusinessLayer.Concrete
         {
             _articleDal.Update(entity);
         }
+        public List<Article> TGetArticleByCategoryId()
+        {
+            return _articleDal.GetArticleByCategoryId();
+        }
     }
 }

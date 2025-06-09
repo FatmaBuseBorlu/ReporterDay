@@ -9,5 +9,6 @@ namespace ReporterDay.BusinessLayer.Abstract
 {
     public interface ICategoryService : IGenericService<Category>
     {
+        public int TGetCategoryCount();
     }
 }
