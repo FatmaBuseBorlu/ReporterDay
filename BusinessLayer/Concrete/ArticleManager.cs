@@ -22,12 +22,12 @@ namespace ReporterDay.BusinessLayer.Concrete
             _articleDal.Delete(id);
         }
 
-        public Article GetById(int id)
+        public Article TGetById(int id)
         {
             return _articleDal.GetById(id);
         }
 
-        public List<Article> GetListAll()
+        public List<Article> TGetListAll()
         {
             return _articleDal.GetListAll();
         }
@@ -51,6 +51,11 @@ namespace ReporterDay.BusinessLayer.Concrete
         public List<Article> TGetArticleByCategoryId()
         {
             return _articleDal.GetArticleByCategoryId();
+        }
+
+        public List<Article> TGetArticlesWithAppUser()
+        {
+            return _articleDal.GetArticlesWithAppUser();
         }
     }
 }

@@ -20,11 +20,11 @@ namespace ReporterDay.BusinessLayer.Concrete
         {
            _tagDal.Delete(id);
         }
-        public Tag GetById(int id)
+        public Tag TGetById(int id)
         {
             return _tagDal.GetById(id);
         }
-        public List<Tag> GetListAll()
+        public List<Tag> TGetListAll()
         {
             return _tagDal.GetListAll();
         }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ReporterDay.EntityLayer.Entities;
 using System;
 using System.Collections.Generic;
@@ -8,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace ReporterDay.DataAccessLayer.Context
 {
-    public class ArticleContext : DbContext
+    public class ArticleContext : IdentityDbContext<AppUser>
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("DESKTOP-NBRMDOS;initial catalog=ReporterBlogDayDb;integrated security=true;trust server certificate=true");
+            optionsBuilder.UseSqlServer("Server=DESKTOP-NBRMDOS;initial catalog=ReporterBlogDayDb;integrated security=true;trust server certificate=true");
         }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Article> Articles { get; set; }

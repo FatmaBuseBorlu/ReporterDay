@@ -13,7 +13,7 @@ namespace ReporterDay.BusinessLayer.ValidationRules
         public CategoryValidation()
         {
             RuleFor(x => x.CategoryName).NotEmpty().WithMessage("Kategori adı boş geçilemez!");
-            RuleFor(x => x.CategoryName).MinimumLength(3).WithMessage("Lütfen en az 3 karakter veri girişi yapınız").MaximumLength(3).WithMessage("Lütfen en fazla 30 karakter veri girişi yapınız!")
+            RuleFor(x => x.CategoryName).MinimumLength(3).WithMessage("Lütfen en az 3 karakter veri girişi yapınız").MaximumLength(3).WithMessage("Lütfen en fazla 30 karakter veri girişi yapınız!");
 
         }
     }

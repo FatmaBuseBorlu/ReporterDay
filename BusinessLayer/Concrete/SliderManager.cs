@@ -21,11 +21,11 @@ namespace ReporterDay.BusinessLayer.Concrete
         {
             _sliderDal.Delete(id);
         }
-        public Slider GetById(int id)
+        public Slider TGetById(int id)
         {
             return _sliderDal.GetById(id);
         }
-        public List<Slider> GetListAll()
+        public List<Slider> TGetListAll()
         {
             return _sliderDal.GetListAll();
         }

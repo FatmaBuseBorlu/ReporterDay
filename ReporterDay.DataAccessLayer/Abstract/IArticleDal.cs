@@ -10,5 +10,6 @@ namespace ReporterDay.DataAccessLayer.Abstract
     public interface IArticleDal : IGenericDal<Article>
     {
         List<Article> GetArticleByCategoryId();
+        List<Article> GetArticlesWithAppUser();
     }
 }

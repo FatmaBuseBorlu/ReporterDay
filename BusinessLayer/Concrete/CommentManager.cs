@@ -21,11 +21,11 @@ namespace ReporterDay.BusinessLayer.Concrete
         {
             _commentDal.Delete(id);
         }
-        public Comment GetById(int id)
+        public Comment TGetById(int id)
         {
             return _commentDal.GetById(id);
         }
-        public List<Comment> GetListAll()
+        public List<Comment> TGetListAll()
         {
             return _commentDal.GetListAll();
         }

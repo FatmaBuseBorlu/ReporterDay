@@ -11,7 +11,7 @@ namespace ReporterDay.BusinessLayer.Abstract
         void TInsert(T entity);
         void TUpdate(T entity);
         void TDelete(int id);
-        List<T> GetListAll();
-        T GetById(int id);
+        List<T> TGetListAll();
+        T TGetById(int id);
     }
 }
