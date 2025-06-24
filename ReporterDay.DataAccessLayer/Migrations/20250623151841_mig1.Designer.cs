@@ -12,8 +12,8 @@ using ReporterDay.DataAccessLayer.Context;
 namespace ReporterDay.DataAccessLayer.Migrations
 {
     [DbContext(typeof(ArticleContext))]
-    [Migration("20250617120057_mig4")]
-    partial class mig4
+    [Migration("20250623151841_mig1")]
+    partial class mig1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -262,7 +262,7 @@ namespace ReporterDay.DataAccessLayer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("MainImageUrl")

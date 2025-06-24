@@ -244,10 +244,7 @@ namespace ReporterDay.DataAccessLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ArticleId"));
 
-                    b.Property<int>("AppUserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("AppUserId1")
+                    b.Property<string>("AppUserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("CategoryId")
@@ -261,7 +258,7 @@ namespace ReporterDay.DataAccessLayer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("MainImageUrl")
@@ -274,7 +271,7 @@ namespace ReporterDay.DataAccessLayer.Migrations
 
                     b.HasKey("ArticleId");
 
-                    b.HasIndex("AppUserId1");
+                    b.HasIndex("AppUserId");
 
                     b.HasIndex("CategoryId");
 
@@ -417,7 +414,7 @@ namespace ReporterDay.DataAccessLayer.Migrations
                 {
                     b.HasOne("ReporterDay.EntityLayer.Entities.AppUser", "AppUser")
                         .WithMany("Articles")
-                        .HasForeignKey("AppUserId1");
+                        .HasForeignKey("AppUserId");
 
                     b.HasOne("ReporterDay.EntityLayer.Entities.Category", "Category")
                         .WithMany("Articles")

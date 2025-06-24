@@ -50,12 +50,22 @@ namespace ReporterDay.BusinessLayer.Concrete
         }
         public List<Article> TGetArticleByCategoryId()
         {
-            return _articleDal.GetArticleByCategoryId();
+            return _articleDal.GetArticlesByCategoryId1();
         }
 
         public List<Article> TGetArticlesWithAppUser()
         {
             return _articleDal.GetArticlesWithAppUser();
+        }
+
+        public List<Article> TGetArticlesWithCategories()
+        {
+            return _articleDal.GetArticlesWithCategories();
+        }
+
+        public List<Article> TGetArticlesWithCategoriesAndAppUsers()
+        {
+            return _articleDal.GetArticlesWithCategoriesAndAppUsers();
         }
     }
 }

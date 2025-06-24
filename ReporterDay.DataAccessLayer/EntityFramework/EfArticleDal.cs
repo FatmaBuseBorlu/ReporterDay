@@ -18,16 +18,26 @@ namespace ReporterDay.DataAccessLayer.EntityFramework
         {
             _context = context;
         }
-
-        public List<Article> GetArticleByCategoryId()
+        public List<Article> GetArticlesByCategoryId1()
         {
             var values = _context.Articles.Where(x => x.CategoryId == 1).ToList();
             return values;
         }
+
         public List<Article> GetArticlesWithAppUser()
         {
             var values = _context.Articles.ToList();
             return values;
+        }
+
+        public List<Article> GetArticlesWithCategories()
+        {
+           return _context.Articles.Include(x=>x.Category).ToList();
+        }
+
+        public List<Article> GetArticlesWithCategoriesAndAppUsers()
+        {
+            return _context.Articles.Include(x=> x.Category).Include(x=>x.AppUser).ToList();
         }
     }
 }

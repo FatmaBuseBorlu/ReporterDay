@@ -1,4 +1,5 @@
-﻿
+﻿@model List<ReporterDay.EntityLayer.Entities.Article>
+
 <div class="container">
     <div class="row">
         <div class="col-lg-12">
@@ -15,7 +16,7 @@
 
                                     <div class="post-img position-relative overflow-hidden">
                                         <img src="@item.CoverImageUrl" class="img-fluid" alt="" style="width:400px; height:250px">
-                                        <span class="post-date">@item.CreateDate.ToString("dd-MMM-yyyy")</span>
+                                        <span class="post-date">@item.CreatedDate.ToString("dd-MMM-yyyy")</span>
                                     </div>
 
                                     <div class="post-content d-flex flex-column">
@@ -24,11 +25,11 @@
 
                                         <div class="meta d-flex align-items-center">
                                             <div class="d-flex align-items-center">
-                                                <i class="bi bi-person"></i> <span class="ps-2">Yazar Adı</span>
+                                                <i class="bi bi-person"></i> <span class="ps-2">@item.AppUser.Name @item.AppUser.Surname</span>
                                             </div>
                                             <span class="px-3 text-black-50">/</span>
                                             <div class="d-flex align-items-center">
-                                                <i class="bi bi-folder2"></i> <span class="ps-2">Kategori Adı</span>
+                                                <i class="bi bi-folder2"></i> <span class="ps-2">@item.Category.CategoryName</span>
                                             </div>
                                         </div>
 
@@ -38,7 +39,7 @@
 
                                         <hr>
 
-                                        <a href="blog-details.html" class="readmore stretched-link"><span>Devamını Okuyun</span><i class="bi bi-arrow-right"></i></a>
+                                        <a href="/Article/ArticleDetail/@item.ArticleId/" class="readmore stretched-link"><span>Devamını Okuyun</span><i class="bi bi-arrow-right"></i></a>
 
                                     </div>
 
