@@ -16,3 +16,4 @@ namespace ReporterDay.EntityLayer.Entities
         public List<Article> Articles { get; set; }
     }
 }
+                                                                                                      
