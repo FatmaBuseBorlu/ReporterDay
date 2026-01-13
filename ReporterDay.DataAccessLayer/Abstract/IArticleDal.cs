@@ -13,5 +13,6 @@ namespace ReporterDay.DataAccessLayer.Abstract
         List<Article> GetArticlesWithAppUser();
         List<Article> GetArticlesWithCategories();
         List<Article> GetArticlesWithCategoriesAndAppUsers();
+        Article  GetArticlesWithAuthorandCategoriesById(int id);
     }
 }

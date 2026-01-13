@@ -1,4 +1,5 @@
-﻿using ReporterDay.EntityLayer.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using ReporterDay.EntityLayer.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,6 @@ namespace ReporterDay.BusinessLayer.Abstract
         public List<Article> TGetArticlesWithAppUser();
         public List<Article> TGetArticlesWithCategories();
         public List<Article> TGetArticlesWithCategoriesAndAppUsers();
+        public Article TGetArticlesWithAuthorandCategoriesById(int id);
     }
 }

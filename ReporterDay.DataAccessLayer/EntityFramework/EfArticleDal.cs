@@ -30,6 +30,12 @@ namespace ReporterDay.DataAccessLayer.EntityFramework
             return values;
         }
 
+        public Article GetArticlesWithAuthorandCategoriesById(int id)
+        {
+            var values = _context.Articles.Include(x => x.AppUser).Include(x => x.Category).Where(z => z.ArticleId == id).FirstOrDefault();
+            return values;
+        }
+
         public List<Article> GetArticlesWithCategories()
         {
            return _context.Articles.Include(x=>x.Category).ToList();

@@ -67,5 +67,10 @@ namespace ReporterDay.BusinessLayer.Concrete
         {
             return _articleDal.GetArticlesWithCategoriesAndAppUsers();
         }
+
+        public Article TGetArticlesWithAuthorandCategoriesById(int id)
+        {
+           return _articleDal.GetArticlesWithAuthorandCategoriesById(id);
+        }
     }
 }
