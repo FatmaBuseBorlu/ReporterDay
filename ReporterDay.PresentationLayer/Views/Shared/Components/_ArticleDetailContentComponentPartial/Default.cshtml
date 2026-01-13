@@ -1,4 +1,6 @@
-﻿<section id="blog-details" class="blog-details section">
+﻿@model ReporterDay.EntityLayer.Entities.Article
+
+<section id="blog-details" class="blog-details section">
     <div class="container">
 
         <article class="article">
@@ -7,7 +9,7 @@
                 <img src="/ZenBlog-1.0.0/assets/img/blog/blog-1.jpg" alt="" class="img-fluid">
             </div>
 
-            <h2 class="title">Makale Başlığı</h2>
+            <h2 class="title">@Model.Title</h2>
 
             <div class="meta-top">
                 <ul>

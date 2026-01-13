@@ -1,90 +1,39 @@
-﻿
-@{
+﻿@{
     Layout = null;
 }
 
 <!DOCTYPE html>
 <html lang="en">
 
- @await Component.InvokeAsync("_HeadDefaultComponentPartial")
+@await Component.InvokeAsync("_HeadDefaultComponentPartial")
 
 <body class="single-post-page">
 
     @await Component.InvokeAsync("_ArticleDetailNavbarComponentPartial")
 
     <main class="main">
-
-        <!-- Page Title -->
-        <div class="page-title">
-            <div class="container d-lg-flex justify-content-between align-items-center">
-                <h1 class="mb-2 mb-lg-0">Single Post</h1>
-                <nav class="breadcrumbs">
-                    <ol>
-                        <li><a href="index.html">Home</a></li>
-                        <li class="current">Single Post</li>
-                    </ol>
-                </nav>
-            </div>
-        </div><!-- End Page Title -->
-
         <div class="container">
             <div class="row">
-
                 <div class="col-lg-8">
+                    @await Component.InvokeAsync("_ArticleDetailContentComponentPartial", new { id = ViewBag.i })
 
-                    <!-- Blog Details Section -->
-                    @await Component.InvokeAsync("_ArticleDetailContentComponentPartial")
-                    <!-- /Blog Details Section -->
-                    <!-- Blog Comments Section -->
                     @await Component.InvokeAsync("_ArticleDetailCommentsComponentPartial")
-                    <!-- /Blog Comments Section -->
-                    <!-- Comment Form Section -->
-                    @await Component.InvokeAsync("_ArtricleDetailAddCommentComponentPartial")
-                    <!-- /Comment Form Section -->
 
+                    @await Component.InvokeAsync("_ArtricleDetailAddCommentComponentPartial")
                 </div>
 
                 <div class="col-lg-4 sidebar">
-
                     <div class="widgets-container">
-
-                        <!-- Blog Author Widget -->    
-                        <!--/Blog Author Widget -->
                         @await Component.InvokeAsync("_ArticleDetailAboutAuthorComponentPartial")
-                        <!-- Search Widget -->
-                        <!--/Search Widget -->
-                        <!-- Recent Posts Widget -->
+
                         @await Component.InvokeAsync("_ArticleDetailRecentArticlesComponentPartial")
-                        <!--/Recent Posts Widget -->
-                        <!-- Tags Widget -->
-                        <div class="tags-widget widget-item">
 
-                            <h3 class="widget-title">Tags</h3>
-                            <ul>
-                                <li><a href="#">App</a></li>
-                                <li><a href="#">IT</a></li>
-                                <li><a href="#">Business</a></li>
-                                <li><a href="#">Mac</a></li>
-                                <li><a href="#">Design</a></li>
-                                <li><a href="#">Office</a></li>
-                                <li><a href="#">Creative</a></li>
-                                <li><a href="#">Studio</a></li>
-                                <li><a href="#">Smart</a></li>
-                                <li><a href="#">Tips</a></li>
-                                <li><a href="#">Marketing</a></li>
-                            </ul>
-
-                        </div><!--/Tags Widget -->
-
+                        @await Component.InvokeAsync("_ArticleDetailTagListComponentPartial")
                     </div>
-
                 </div>
-
             </div>
         </div>
-
     </main>
     @await Component.InvokeAsync("_FooterDefaultComponentPartial")
 </body>
-
 </html>

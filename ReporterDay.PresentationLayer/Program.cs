@@ -17,6 +17,10 @@ builder.Services.AddScoped<ISliderDal, EfSliderDal>();
 
 builder.Services.AddScoped<IArticleService, ArticleManager>();
 builder.Services.AddScoped<IArticleDal, EfArticleDal>();
+
+builder.Services.AddScoped<ITagService, TagManager>();
+builder.Services.AddScoped<ITagDal, EfTagDal>();
+
 builder.Services.AddDbContext<ArticleContext>();
 
 builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<ArticleContext>();

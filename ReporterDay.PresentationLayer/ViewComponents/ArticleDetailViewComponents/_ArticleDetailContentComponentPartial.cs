@@ -1,12 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ReporterDay.BusinessLayer.Abstract;
 
 namespace ReporterDay.PresentationLayer.ViewComponents.ArticleDetailViewComponents
 {
     public class _ArticleDetailContentComponentPartial : ViewComponent
     {
-         public IViewComponentResult Invoke()
+        private readonly IArticleService _articleService;
+        public _ArticleDetailContentComponentPartial(IArticleService articleService)
+        {
+            _articleService = articleService;
+        }
+        public IViewComponentResult Invoke(int id)
           {
-                return View();
+            var value= _articleService.TGetById(id);
+            return View(value);
         }
     }
 }
