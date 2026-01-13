@@ -19,4 +19,8 @@
     <ProjectReference Include="..\BusinessLayer\ReporterDay.BusinessLayer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Shared\Components\_ArticleDetailNavbarComponentPartial\" />
+  </ItemGroup>
+
 </Project>
