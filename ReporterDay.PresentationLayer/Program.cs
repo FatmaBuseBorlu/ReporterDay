@@ -21,6 +21,9 @@ builder.Services.AddScoped<IArticleDal, EfArticleDal>();
 builder.Services.AddScoped<ITagService, TagManager>();
 builder.Services.AddScoped<ITagDal, EfTagDal>();
 
+builder.Services.AddScoped<ICommentService, CommentManager>();
+builder.Services.AddScoped<ICommentDal, EfCommentDal>();
+
 builder.Services.AddDbContext<ArticleContext>();
 
 builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<ArticleContext>();

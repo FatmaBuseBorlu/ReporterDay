@@ -17,7 +17,7 @@
                 <div class="col-lg-8">
                     @await Component.InvokeAsync("_ArticleDetailContentComponentPartial", new { id = ViewBag.i })
 
-                    @await Component.InvokeAsync("_ArticleDetailCommentsComponentPartial")
+                    @await Component.InvokeAsync("_ArticleDetailCommentsComponentPartial", new { id = ViewBag.i })
 
                     @await Component.InvokeAsync("_ArtricleDetailAddCommentComponentPartial")
                 </div>

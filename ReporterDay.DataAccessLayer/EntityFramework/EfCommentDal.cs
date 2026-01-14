@@ -1,4 +1,5 @@
-﻿using ReporterDay.DataAccessLayer.Abstract;
+﻿using Microsoft.EntityFrameworkCore;
+using ReporterDay.DataAccessLayer.Abstract;
 using ReporterDay.DataAccessLayer.Context;
 using ReporterDay.DataAccessLayer.Repositories;
 using ReporterDay.EntityLayer.Entities;
@@ -20,7 +21,7 @@ namespace ReporterDay.DataAccessLayer.EntityFramework
 
         public List<Comment> GetCommentsByArticleId(int id)
         {
-            var values = _context.Comments.Where(x => x.ArticleId==id);
+            var values = _context.Comments.Include(y=>y.AppUser).Where(x => x.ArticleId==id);
             return values.ToList();
         }
     }

@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Views\Author\" />
     <Folder Include="Views\Shared\Components\_ArticleDetailNavbarComponentPartial\" />
   </ItemGroup>
 

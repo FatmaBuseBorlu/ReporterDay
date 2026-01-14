@@ -14,5 +14,7 @@ namespace ReporterDay.EntityLayer.Entities
         public bool IsValid { get; set; }
         public int ArticleId { get; set; }
         public Article Article { get; set; }
+        public string AppUserId { get; set; }
+        public AppUser AppUser { get; set; }
     }
 }
