@@ -12,10 +12,12 @@ namespace ReporterDay.PresentationLayer.Controllers
         {
             _signInManager = signInManager;
         }
+
         public IActionResult UserLogin()
         {
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> UserLogin(UserLoginViewModel model)
         {

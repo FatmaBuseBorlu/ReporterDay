@@ -16,22 +16,53 @@ namespace ReporterDay.BusinessLayer.Concrete
         {
             _articleDal = articleDal;
         }
-
         public void TDelete(int id)
         {
             _articleDal.Delete(id);
+        }
+
+        public List<Article> TGetArticleByCategoryId()
+        {
+            return _articleDal.GetArticlesByCategoryId();
+        }
+
+        public List<Article> TGetArticlesByAuthor(string id)
+        {
+            return _articleDal.GetArticlesByAuthor(id);
+        }
+        public List<Article> TGetArticlesWithAppUser()
+        {
+            return _articleDal.GetArticlesWithAppUser();
+        }
+
+        public Article TGetArticlesWithAuthorAndCategoriesById(int id)
+        {
+            return _articleDal.GetArticlesWithAuthorAndCategoriesById(id);
+        }
+
+        public Article TGetArticlesWithAuthorandCategoriesById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Article> TGetArticlesWithCategories()
+        {
+            return _articleDal.GetArticlesWithCategories();
+        }
+
+        public List<Article> TGetArticlesWithCategoriesAndAppUsers()
+        {
+            return _articleDal.GetArticlesWithCategoriesAndAppUsers();
         }
 
         public Article TGetById(int id)
         {
             return _articleDal.GetById(id);
         }
-
         public List<Article> TGetListAll()
         {
             return _articleDal.GetListAll();
         }
-
         public void TInsert(Article entity)
         {
             if (entity.Title != null && entity.Title.Length > 10 && entity.CategoryId != 0 && entity.Content.Length <= 1000)
@@ -47,30 +78,6 @@ namespace ReporterDay.BusinessLayer.Concrete
         public void TUpdate(Article entity)
         {
             _articleDal.Update(entity);
-        }
-        public List<Article> TGetArticleByCategoryId()
-        {
-            return _articleDal.GetArticlesByCategoryId1();
-        }
-
-        public List<Article> TGetArticlesWithAppUser()
-        {
-            return _articleDal.GetArticlesWithAppUser();
-        }
-
-        public List<Article> TGetArticlesWithCategories()
-        {
-            return _articleDal.GetArticlesWithCategories();
-        }
-
-        public List<Article> TGetArticlesWithCategoriesAndAppUsers()
-        {
-            return _articleDal.GetArticlesWithCategoriesAndAppUsers();
-        }
-
-        public Article TGetArticlesWithAuthorandCategoriesById(int id)
-        {
-           return _articleDal.GetArticlesWithAuthorandCategoriesById(id);
         }
     }
 }

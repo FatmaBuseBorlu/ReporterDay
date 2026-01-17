@@ -18,7 +18,14 @@ namespace ReporterDay.DataAccessLayer.EntityFramework
         {
             _context = context;
         }
-        public List<Article> GetArticlesByCategoryId1()
+
+        public List<Article> GetArticlesByAuthor(string id)
+        {
+            var values = _context.Articles.Where(x => x.AppUserId == id).ToList();
+            return values;
+        }
+
+        public List<Article> GetArticlesByCategoryId()
         {
             var values = _context.Articles.Where(x => x.CategoryId == 1).ToList();
             return values;
@@ -33,6 +40,12 @@ namespace ReporterDay.DataAccessLayer.EntityFramework
         public Article GetArticlesWithAuthorandCategoriesById(int id)
         {
             var values = _context.Articles.Include(x => x.AppUser).Include(x => x.Category).Where(z => z.ArticleId == id).FirstOrDefault();
+            return values;
+        }
+
+        public Article GetArticlesWithAuthorAndCategoriesById(int id)
+        {
+            var values = _context.Articles.Include(x => x.AppUser).Include(y => y.Category).Where(z => z.ArticleId == id).FirstOrDefault();
             return values;
         }
 

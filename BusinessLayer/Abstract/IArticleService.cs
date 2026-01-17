@@ -15,5 +15,6 @@ namespace ReporterDay.BusinessLayer.Abstract
         public List<Article> TGetArticlesWithCategories();
         public List<Article> TGetArticlesWithCategoriesAndAppUsers();
         public Article TGetArticlesWithAuthorandCategoriesById(int id);
+        List<Article> TGetArticlesByAuthor(string id);
     }
 }
