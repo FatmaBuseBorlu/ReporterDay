@@ -19,12 +19,12 @@
 
                     @await Component.InvokeAsync("_ArticleDetailCommentsComponentPartial", new { id = ViewBag.i })
 
-                    @await Component.InvokeAsync("_ArtricleDetailAddCommentComponentPartial")
+                    @await Component.InvokeAsync("_ArtricleDetailAddCommentComponentPartial", new { id = ViewBag.i })
                 </div>
 
                 <div class="col-lg-4 sidebar">
                     <div class="widgets-container">
-                        @await Component.InvokeAsync("_ArticleDetailAboutAuthorComponentPartial")
+                        @await Component.InvokeAsync("_ArticleDetailAboutAuthorComponentPartial", new { id = ViewBag.i })
 
                         @await Component.InvokeAsync("_ArticleDetailRecentArticlesComponentPartial")
 
@@ -34,6 +34,8 @@
             </div>
         </div>
     </main>
+
     @await Component.InvokeAsync("_FooterDefaultComponentPartial")
+
 </body>
 </html>

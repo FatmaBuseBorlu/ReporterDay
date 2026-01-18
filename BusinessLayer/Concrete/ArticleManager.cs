@@ -1,11 +1,14 @@
 ﻿using ReporterDay.BusinessLayer.Abstract;
 using ReporterDay.DataAccessLayer.Abstract;
+using ReporterDay.DataAccessLayer.EntityFramework;
 using ReporterDay.EntityLayer.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace ReporterDay.BusinessLayer.Concrete
 {
@@ -55,6 +58,11 @@ namespace ReporterDay.BusinessLayer.Concrete
             return _articleDal.GetArticlesWithCategoriesAndAppUsers();
         }
 
+        public Article TGetArticleWithAuthorAndCategoryBySlug(string slug)
+        {
+            return _articleDal.GetArticleWithAuthorAndCategoryBySlug(slug);
+        }
+
         public Article TGetById(int id)
         {
             return _articleDal.GetById(id);
@@ -69,8 +77,50 @@ namespace ReporterDay.BusinessLayer.Concrete
             return _articleDal.GetPagedArticlesWithCategoriesAndAppUsers(page, pageSize);
         }
 
-        public void TInsert(Article entity)
+
+private static string Slugify(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return "";
+
+        text = text.Trim().ToLowerInvariant();
+
+        text = text
+            .Replace("ç", "c")
+            .Replace("ğ", "g")
+            .Replace("ı", "i")
+            .Replace("ö", "o")
+            .Replace("ş", "s")
+            .Replace("ü", "u");
+
+        text = Regex.Replace(text, @"[^a-z0-9\s-]", "");
+        text = Regex.Replace(text, @"\s+", " ").Trim();
+        text = text.Replace(" ", "-");
+        text = Regex.Replace(text, @"-+", "-");
+
+        return text;
+    }
+
+    private string GenerateUniqueSlug(string title)
+    {
+        var baseSlug = Slugify(title);
+        if (string.IsNullOrWhiteSpace(baseSlug)) baseSlug = Guid.NewGuid().ToString("n");
+
+        var slug = baseSlug;
+        var i = 2;
+
+        while (_articleDal.SlugExists(slug))
         {
+            slug = $"{baseSlug}-{i}";
+            i++;
+        }
+
+        return slug;
+    }
+
+    public void TInsert(Article entity)
+        {
+            if (string.IsNullOrWhiteSpace(entity.Slug))
+                entity.Slug = GenerateUniqueSlug(entity.Title);
             if (entity.Title != null && entity.Title.Length > 10 && entity.CategoryId != 0 && entity.Content.Length <= 1000)
             {
                 _articleDal.Insert(entity);
@@ -81,9 +131,19 @@ namespace ReporterDay.BusinessLayer.Concrete
             }
         }
 
+        public bool TSlugExists(string slug)
+        {
+            return _articleDal.SlugExists(slug);
+        }
+
         public void TUpdate(Article entity)
         {
             _articleDal.Update(entity);
+        }
+
+        public List<Article> TGetLastArticles()
+        {
+            return _articleDal.GetLastArticles();
         }
     }
 }

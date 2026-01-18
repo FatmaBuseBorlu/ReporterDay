@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Logging;
 using ReporterDay.BusinessLayer.Abstract;
+using ReporterDay.PresentationLayer.Helpers;
 using ReporterDay.PresentationLayer.Models;
 
 namespace ReporterDay.PresentationLayer.Controllers
@@ -7,10 +9,42 @@ namespace ReporterDay.PresentationLayer.Controllers
     public class ArticleController : Controller
     {
         private readonly IArticleService _articleService;
+
         public ArticleController(IArticleService articleService)
         {
             _articleService = articleService;
         }
+
+        [HttpGet("/article/{slug}")]
+        public IActionResult ArticleDetail(string slug)
+        {
+            var article = _articleService.TGetArticleWithAuthorAndCategoryBySlug(slug);
+            if (article == null) return NotFound();
+
+            ViewBag.i = article.ArticleId;
+
+            return View("ArticleDetail");
+        }
+
+        [HttpGet("/Article/ArticleDetail/{id:int}")]
+        public IActionResult ArticleDetailById(int id)
+        {
+            var article = _articleService.TGetArticlesWithAuthorandCategoriesById(id);
+            if (article == null) return NotFound();
+
+            if (string.IsNullOrWhiteSpace(article.Slug))
+            {
+                article.Slug = SlugHelper.Slugify(article.Title);
+
+                if (string.IsNullOrWhiteSpace(article.Slug))
+                    return NotFound();
+
+                _articleService.TUpdate(article);
+            }
+
+            return Redirect($"/article/{article.Slug}");
+        }
+
         public IActionResult Index(int page = 1)
         {
             int pageSize = 9;
@@ -32,12 +66,6 @@ namespace ReporterDay.PresentationLayer.Controllers
             };
 
             return View(model);
-        }
-
-        public IActionResult ArticleDetail(int id)
-        {
-            ViewBag.i = id;
-            return View();
         }
     }
 }

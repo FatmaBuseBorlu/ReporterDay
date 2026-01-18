@@ -1,14 +1,28 @@
-﻿<div class="recent-posts-widget widget-item">
+﻿@model List<ReporterDay.EntityLayer.Entities.Article>
+
+<div class="recent-posts-widget widget-item">
 
     <h3 class="widget-title">Son Makaleler</h3>
 
-    <div class="post-item">
-        <img src="/ZenBlog-1.0.0/assets/img/blog/blog-recent-1.jpg" alt="" class="flex-shrink-0">
-        <div>
-            <h4><a href="blog-details.html">Başlık</a></h4>
-            <time datetime="2020-01-01">Tarih</time>
-        </div>
-    </div><!-- End recent post item-->
+    @foreach (var item in Model)
+    {
+        var cover = string.IsNullOrWhiteSpace(item.CoverImageUrl)
+        ? "/images/no-image.jpg"
+        : item.CoverImageUrl;
 
+        <div class="post-item">
+            <img src="@cover" alt="@item.Title" class="flex-shrink-0">
+
+            <div>
+                <h4>
+                    <a href="/article/@item.Slug">@item.Title</a>
+                </h4>
+
+                <time datetime="@item.CreatedDate.ToString("yyyy-MM-dd")">
+                    @item.CreatedDate.ToString("dd.MM.yyyy")
+                </time>
+            </div>
+        </div>
+    }
 
 </div>
