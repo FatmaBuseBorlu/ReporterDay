@@ -19,6 +19,11 @@ namespace ReporterDay.DataAccessLayer.EntityFramework
             _context = context;
         }
 
+        public int GetArticleCount()
+        {
+            return _context.Articles.Count();
+        }
+
         public List<Article> GetArticlesByAuthor(string id)
         {
             var values = _context.Articles.Where(x => x.AppUserId == id).ToList();
@@ -57,6 +62,19 @@ namespace ReporterDay.DataAccessLayer.EntityFramework
         public List<Article> GetArticlesWithCategoriesAndAppUsers()
         {
             return _context.Articles.Include(x=> x.Category).Include(x=>x.AppUser).ToList();
+        }
+
+        public List<Article> GetPagedArticlesWithCategoriesAndAppUsers(int page, int pageSize)
+        {
+            int skip = (page - 1) * pageSize;
+
+            return _context.Articles
+                .Include(x => x.Category)
+                .Include(x => x.AppUser)
+                .OrderByDescending(x => x.CreatedDate)
+                .Skip(skip)
+                .Take(pageSize)
+                .ToList();
         }
     }
 }

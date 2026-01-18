@@ -26,6 +26,11 @@ namespace ReporterDay.BusinessLayer.Concrete
             return _articleDal.GetArticlesByCategoryId();
         }
 
+        public int TGetArticleCount()
+        {
+            return _articleDal.GetArticleCount();
+        }
+
         public List<Article> TGetArticlesByAuthor(string id)
         {
             return _articleDal.GetArticlesByAuthor(id);
@@ -35,14 +40,9 @@ namespace ReporterDay.BusinessLayer.Concrete
             return _articleDal.GetArticlesWithAppUser();
         }
 
-        public Article TGetArticlesWithAuthorAndCategoriesById(int id)
-        {
-            return _articleDal.GetArticlesWithAuthorAndCategoriesById(id);
-        }
-
         public Article TGetArticlesWithAuthorandCategoriesById(int id)
         {
-            throw new NotImplementedException();
+            return _articleDal.GetArticlesWithAuthorAndCategoriesById(id);
         }
 
         public List<Article> TGetArticlesWithCategories()
@@ -63,6 +63,12 @@ namespace ReporterDay.BusinessLayer.Concrete
         {
             return _articleDal.GetListAll();
         }
+
+        public List<Article> TGetPagedArticlesWithCategoriesAndAppUsers(int page, int pageSize)
+        {
+            return _articleDal.GetPagedArticlesWithCategoriesAndAppUsers(page, pageSize);
+        }
+
         public void TInsert(Article entity)
         {
             if (entity.Title != null && entity.Title.Length > 10 && entity.CategoryId != 0 && entity.Content.Length <= 1000)
