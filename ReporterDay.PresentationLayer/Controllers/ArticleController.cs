@@ -1,42 +1,33 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ReporterDay.BusinessLayer.Abstract;
-using ReporterDay.PresentationLayer.Models;
+using ReporterDay.PresentationLayer.Security;
 
 namespace ReporterDay.PresentationLayer.Controllers
 {
     public class ArticleController : Controller
     {
         private readonly IArticleService _articleService;
-        public ArticleController(IArticleService articleService)
+        private readonly IdProtector _idProtector;
+
+        public ArticleController(IArticleService articleService, IdProtector idProtector)
         {
             _articleService = articleService;
+            _idProtector = idProtector;
         }
-        public IActionResult Index(int page = 1)
+
+        public IActionResult ArticleDetail(string id)
         {
-            int pageSize = 9;
 
-            int totalCount = _articleService.TGetArticleCount();
-            int totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-
-            if (totalPages < 1) totalPages = 1;
-            if (page < 1) page = 1;
-            if (page > totalPages) page = totalPages;
-
-            var articles = _articleService.TGetPagedArticlesWithCategoriesAndAppUsers(page, pageSize);
-
-            var model = new HomeArticleListViewModel
+            if (int.TryParse(id, out var numericId))
             {
-                Articles = articles,
-                CurrentPage = page,
-                TotalPages = totalPages
-            };
+                var token = _idProtector.Protect(numericId);
+                return RedirectToAction(nameof(ArticleDetail), new { id = token });
+            }
 
-            return View(model);
-        }
+            if (!_idProtector.TryUnprotect(id, out var articleId))
+                return NotFound();
 
-        public IActionResult ArticleDetail(int id)
-        {
-            ViewBag.i = id;
+            ViewBag.i = articleId;
             return View();
         }
     }

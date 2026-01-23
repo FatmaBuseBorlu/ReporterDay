@@ -1,4 +1,4 @@
-﻿@{
+﻿ @{
     Layout = null;
 }
 
@@ -26,7 +26,7 @@
                     <div class="widgets-container">
                         @await Component.InvokeAsync("_ArticleDetailAboutAuthorComponentPartial")
 
-                        @await Component.InvokeAsync("_ArticleDetailRecentArticlesComponentPartial")
+                        @await Component.InvokeAsync("_ArticleDetailRecentArticlesComponentPartial", new { currentArticleId = (int?)ViewBag.i })
 
                         @await Component.InvokeAsync("_ArticleDetailTagListComponentPartial")
                     </div>
