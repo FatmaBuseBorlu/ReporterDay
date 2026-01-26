@@ -8,7 +8,6 @@ using ReporterDay.DataAccessLayer.Context;
 using ReporterDay.DataAccessLayer.EntityFramework;
 using ReporterDay.EntityLayer.Entities;
 using ReporterDay.PresentationLayer.Extensions;
-using ReporterDay.PresentationLayer.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,18 +26,14 @@ builder.Services.AddScoped<ITagDal, EfTagDal>();
 builder.Services.AddScoped<ICommentService, CommentManager>();
 builder.Services.AddScoped<ICommentDal, EfCommentDal>();
 
-builder.Services.AddDataProtection();
-builder.Services.AddScoped<IArticleIdProtector, ArticleIdProtector>();
-
-
 builder.Services.AddDbContext<ArticleContext>();
 
 builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<ArticleContext>();
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddPresentationServices();
 
+builder.Services.AddPresentationServices();
 
 builder.Services.AddMemoryCache();
 
@@ -63,7 +58,6 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-
 app.MapGet("/_endpoints", (IEnumerable<EndpointDataSource> sources) =>
 {
     var list = sources.SelectMany(s => s.Endpoints)
@@ -72,7 +66,6 @@ app.MapGet("/_endpoints", (IEnumerable<EndpointDataSource> sources) =>
 
     return string.Join("\n", list);
 });
-
 
 app.MapControllerRoute(
     name: "default",
