@@ -19,7 +19,7 @@ namespace ReporterDay.PresentationLayer.ViewComponents.ArticleDetailViewComponen
 
         public async Task<IViewComponentResult> InvokeAsync(int id)
         {
-            var comments = _commentService.TGetCommentsByArticleId(id);
+            var comments = _commentService.TGetCommentsByArticleId(id) ?? new();
 
             var tasks = comments.Select(async c =>
             {
@@ -31,7 +31,6 @@ namespace ReporterDay.PresentationLayer.ViewComponents.ArticleDetailViewComponen
                     CommentDetail = c.CommentDetail ?? "",
                     CommentDate = c.CommentDate,
                     UserFullName = c.AppUser != null ? $"{c.AppUser.Name} {c.AppUser.Surname}" : "Anonim",
-
                     IsToxic = check.IsToxic,
                     ToxicityScore = check.Score,
                     ToxicLabel = check.Label,

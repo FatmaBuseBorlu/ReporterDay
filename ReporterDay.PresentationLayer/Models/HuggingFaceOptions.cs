@@ -1,6 +1,6 @@
 ﻿namespace ReporterDay.BusinessLayer.Models
 {
-    public class HuggingFaceOptions
+    public sealed class HuggingFaceOptions
     {
         public string ApiToken { get; set; } = "";
         public string ModelId { get; set; } = "unitary/toxic-bert";

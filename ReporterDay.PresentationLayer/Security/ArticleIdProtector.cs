@@ -1,26 +1,31 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
-using System.Globalization;
+using System;
 
 namespace ReporterDay.PresentationLayer.Security
 {
-    public sealed class ArticleIdProtector : IdProtector
+    public sealed class ArticleIdProtector : IArticleIdProtector
     {
-        private const string Purpose = "ReporterDay.ArticleId.v1";
         private readonly IDataProtector _protector;
 
         public ArticleIdProtector(IDataProtectionProvider provider)
         {
-            _protector = provider.CreateProtector(Purpose);
+            _protector = provider.CreateProtector("ReporterDay.ArticleId.v1");
         }
 
         public string Protect(int id)
+            => _protector.Protect(id.ToString());
+
+        public int Unprotect(string protectedId)
         {
-            return _protector.Protect(id.ToString(CultureInfo.InvariantCulture));
+            if (TryUnprotect(protectedId, out var id))
+                return id;
+
+            throw new InvalidOperationException("Geçersiz makale kimliği.");
         }
 
         public bool TryUnprotect(string protectedId, out int id)
         {
-            id = default;
+            id = 0;
 
             if (string.IsNullOrWhiteSpace(protectedId))
                 return false;
@@ -28,7 +33,7 @@ namespace ReporterDay.PresentationLayer.Security
             try
             {
                 var raw = _protector.Unprotect(protectedId);
-                return int.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out id);
+                return int.TryParse(raw, out id);
             }
             catch
             {

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Routing;
 using ReporterDay.BusinessLayer.Abstract;
 using ReporterDay.BusinessLayer.Concrete;
 using ReporterDay.BusinessLayer.Models;
@@ -7,11 +8,9 @@ using ReporterDay.DataAccessLayer.Context;
 using ReporterDay.DataAccessLayer.EntityFramework;
 using ReporterDay.EntityLayer.Entities;
 using ReporterDay.PresentationLayer.Extensions;
-using Microsoft.AspNetCore.Routing;
-
+using ReporterDay.PresentationLayer.Security;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 builder.Services.AddScoped<ICategoryService, CategoryManager>();
 builder.Services.AddScoped<ICategoryDal, EfCategoryDal>();
@@ -28,12 +27,18 @@ builder.Services.AddScoped<ITagDal, EfTagDal>();
 builder.Services.AddScoped<ICommentService, CommentManager>();
 builder.Services.AddScoped<ICommentDal, EfCommentDal>();
 
+builder.Services.AddDataProtection();
+builder.Services.AddScoped<IArticleIdProtector, ArticleIdProtector>();
+
+
 builder.Services.AddDbContext<ArticleContext>();
 
-builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<ArticleContext>();
+builder.Services.AddIdentity<AppUser, IdentityRole>()
+    .AddEntityFrameworkStores<ArticleContext>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddPresentationServices();
+
 
 builder.Services.AddMemoryCache();
 
@@ -44,11 +49,9 @@ builder.Services.AddHttpClient<IToxicityService, ToxicityManager>();
 
 var app = builder.Build();
 
-
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -60,6 +63,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+
 app.MapGet("/_endpoints", (IEnumerable<EndpointDataSource> sources) =>
 {
     var list = sources.SelectMany(s => s.Endpoints)
@@ -69,9 +73,9 @@ app.MapGet("/_endpoints", (IEnumerable<EndpointDataSource> sources) =>
     return string.Join("\n", list);
 });
 
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Default}/{action=Index}/{id?}");
 
 app.Run();
-

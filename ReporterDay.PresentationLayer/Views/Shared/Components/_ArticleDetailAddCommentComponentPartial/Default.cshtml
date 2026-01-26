@@ -1,0 +1,87 @@
+﻿@model ReporterDay.PresentationLayer.Models.Components.AddCommentRequestViewModel
+
+@if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <div class="reply-form">
+        <h4>Yorum Yapma Paneli</h4>
+
+        <div id="commentWarning" class="alert alert-danger d-none"></div>
+
+        <form id="addCommentForm" asp-controller="Article" asp-action="AddCommentAjax" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="ProtectedArticleId" />
+
+            <div class="form-group mt-2">
+                <textarea asp-for="CommentDetail"
+                          class="form-control"
+                          rows="4"
+                          placeholder="Yorumunuzu buraya yazabilirsiniz..."></textarea>
+                <span asp-validation-for="CommentDetail" class="text-danger"></span>
+            </div>
+
+            <button class="btn btn-primary mt-3" type="submit">Yorumu Gönder</button>
+        </form>
+    </div>
+
+    <script>
+        (function () {
+            const form = document.getElementById('addCommentForm');
+            if (!form) return;
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const warning = document.getElementById('commentWarning');
+                if (warning) { warning.classList.add('d-none'); warning.textContent = ''; }
+
+                try {
+                    const res = await fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+
+                    if (!res.ok) {
+                        const text = await res.text();
+                        if (warning) { warning.textContent = 'Yorum gönderilemedi. ' + text; warning.classList.remove('d-none'); }
+                        return;
+                    }
+
+                    const json = await res.json();
+                    if (!json.ok) {
+                        if (warning) { warning.textContent = json.message || 'Yorum gönderilemedi.'; warning.classList.remove('d-none'); }
+                        return;
+                    }
+
+                    // textarea temizle
+                    const textarea = form.querySelector('textarea');
+                    if (textarea) textarea.value = '';
+
+                    // yorum listesini yenile
+                    const pid = form.querySelector('input[name="ProtectedArticleId"]')?.value;
+                    const container = document.getElementById('commentsContainer');
+
+                    if (pid && container) {
+                        const html = await fetch('/Article/CommentsPartial?id=' + encodeURIComponent(pid), {
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                        }).then(r => r.text());
+
+                        container.innerHTML = html;
+                    } else {
+                        location.reload();
+                    }
+                } catch (err) {
+                    if (warning) { warning.textContent = 'Beklenmedik hata: ' + (err?.message || err); warning.classList.remove('d-none'); }
+                }
+            });
+        })();
+    </script>
+}
+else
+{
+    <div class="reply-form">
+        <h4>Yorum Yapma Paneli</h4>
+        <p>Yorum yapabilmek için giriş yapmalısın.</p>
+        <a class="btn btn-outline-primary" asp-controller="Login" asp-action="UserLogin">Giriş Yap</a>
+    </div>
+}

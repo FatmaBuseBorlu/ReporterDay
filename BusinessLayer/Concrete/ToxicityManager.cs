@@ -21,8 +21,7 @@ namespace ReporterDay.BusinessLayer.Concrete
         private readonly IMemoryCache _cache;
         private readonly HuggingFaceOptions _opt;
 
-        // toxic-bert genelde bu label'ları döndürür
-        private static readonly string[] ToxicLabels =
+        private static readonly HashSet<string> ToxicLabels = new(StringComparer.OrdinalIgnoreCase)
         {
             "toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"
         };
@@ -31,7 +30,7 @@ namespace ReporterDay.BusinessLayer.Concrete
         {
             _http = http;
             _cache = cache;
-            _opt = options.Value;
+            _opt = options.Value ?? new HuggingFaceOptions();
 
             if (_opt.TimeoutSeconds > 0)
                 _http.Timeout = TimeSpan.FromSeconds(_opt.TimeoutSeconds);
@@ -43,7 +42,10 @@ namespace ReporterDay.BusinessLayer.Concrete
             var normalized = text.Trim();
 
             if (string.IsNullOrWhiteSpace(normalized))
-                return new ToxicityCheckResult(false, 0, null, true, null);
+                return new ToxicityCheckResult { IsToxic = false, Score = 0, Label = "empty", IsAvailable = true, Error = null };
+
+            if (string.IsNullOrWhiteSpace(_opt.ApiToken))
+                return new ToxicityCheckResult { IsToxic = false, Score = 0, Label = "unavailable", IsAvailable = false, Error = "HuggingFace ApiToken boş." };
 
             var cacheKey = "tox:" + Sha256(normalized);
             if (_cache.TryGetValue(cacheKey, out ToxicityCheckResult cached))
@@ -56,7 +58,6 @@ namespace ReporterDay.BusinessLayer.Concrete
                 using var req = new HttpRequestMessage(HttpMethod.Post, url);
                 req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _opt.ApiToken);
 
-                // model yükleniyorsa bekle (HF bazen "loading" döndürüyor)
                 var payload = JsonSerializer.Serialize(new
                 {
                     inputs = normalized,
@@ -70,47 +71,66 @@ namespace ReporterDay.BusinessLayer.Concrete
 
                 if (!resp.IsSuccessStatusCode)
                 {
-                    var fail = new ToxicityCheckResult(false, 0, null, false,
-                        $"HF API hata: {(int)resp.StatusCode} - {Truncate(json, 200)}");
+                    var fail = new ToxicityCheckResult
+                    {
+                        IsToxic = false,
+                        Score = 0,
+                        Label = "error",
+                        IsAvailable = false,
+                        Error = $"HF API hata: {(int)resp.StatusCode} - {Truncate(json, 200)}"
+                    };
 
-                    _cache.Set(cacheKey, fail, TimeSpan.FromMinutes(_opt.CacheMinutes));
+                    CacheSet(cacheKey, fail);
                     return fail;
                 }
 
                 var outputs = ParseLabelScores(json);
                 if (outputs.Count == 0)
                 {
-                    var empty = new ToxicityCheckResult(false, 0, null, false, "HF yanıtı okunamadı.");
-                    _cache.Set(cacheKey, empty, TimeSpan.FromMinutes(_opt.CacheMinutes));
+                    var empty = new ToxicityCheckResult
+                    {
+                        IsToxic = false,
+                        Score = 0,
+                        Label = "unreadable",
+                        IsAvailable = false,
+                        Error = "HF yanıtı okunamadı/boş geldi."
+                    };
+
+                    CacheSet(cacheKey, empty);
                     return empty;
                 }
 
-                // Toxic label’lar arasından en yüksek skoru al
                 var bestToxic = outputs
-                    .Where(x => ToxicLabels.Contains(x.Label, StringComparer.OrdinalIgnoreCase))
+                    .Where(x => ToxicLabels.Contains(x.Label))
                     .OrderByDescending(x => x.Score)
                     .FirstOrDefault();
 
-                var isToxic = bestToxic is not null && bestToxic.Score >= _opt.ToxicThreshold;
-
-                // info amaçlı (toksik değilse top1)
                 var top1 = outputs.OrderByDescending(x => x.Score).First();
 
-                var result = new ToxicityCheckResult(
-                    IsToxic: isToxic,
-                    Score: isToxic ? bestToxic!.Score : top1.Score,
-                    Label: isToxic ? bestToxic!.Label : top1.Label,
-                    IsAvailable: true,
-                    Error: null
-                );
+                var isToxic = bestToxic != null && bestToxic.Score >= _opt.ToxicThreshold;
 
-                _cache.Set(cacheKey, result, TimeSpan.FromMinutes(_opt.CacheMinutes));
+                var result = new ToxicityCheckResult
+                {
+                    IsToxic = isToxic,
+                    Score = isToxic ? bestToxic!.Score : top1.Score,
+                    Label = isToxic ? bestToxic!.Label : top1.Label,
+                    IsAvailable = true,
+                    Error = null
+                };
+
+                CacheSet(cacheKey, result);
                 return result;
+            }
+            catch (OperationCanceledException)
+            {
+                var fail = new ToxicityCheckResult { IsToxic = false, Score = 0, Label = "timeout", IsAvailable = false, Error = "HF isteği zaman aşımı." };
+                CacheSet(cacheKey, fail);
+                return fail;
             }
             catch (Exception ex)
             {
-                var fail = new ToxicityCheckResult(false, 0, null, false, ex.Message);
-                _cache.Set(cacheKey, fail, TimeSpan.FromMinutes(_opt.CacheMinutes));
+                var fail = new ToxicityCheckResult { IsToxic = false, Score = 0, Label = "exception", IsAvailable = false, Error = ex.Message };
+                CacheSet(cacheKey, fail);
                 return fail;
             }
         }
@@ -125,8 +145,8 @@ namespace ReporterDay.BusinessLayer.Concrete
             if (root.ValueKind != JsonValueKind.Array || root.GetArrayLength() == 0)
                 return new List<LabelScore>();
 
-            // bazen: [[{label,score}...]] formatı gelebilir
             var first = root[0];
+
             if (first.ValueKind == JsonValueKind.Array)
                 return first.EnumerateArray().Select(ParseOne).ToList();
 
@@ -141,6 +161,12 @@ namespace ReporterDay.BusinessLayer.Concrete
             var label = el.TryGetProperty("label", out var l) ? (l.GetString() ?? "") : "";
             var score = el.TryGetProperty("score", out var s) ? s.GetDouble() : 0;
             return new LabelScore(label, score);
+        }
+
+        private void CacheSet(string key, ToxicityCheckResult value)
+        {
+            var minutes = _opt.CacheMinutes <= 0 ? 60 : _opt.CacheMinutes;
+            _cache.Set(key, value, TimeSpan.FromMinutes(minutes));
         }
 
         private static string BuildModelUrl(string baseUrl, string modelId)

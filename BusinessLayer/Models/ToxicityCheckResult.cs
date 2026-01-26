@@ -1,9 +1,11 @@
 ﻿namespace ReporterDay.BusinessLayer.Models
 {
-    public sealed record ToxicityCheckResult(
-        bool IsToxic,
-        double Score,
-        string? Label,
-        bool IsAvailable,
-        string? Error);
+    public class ToxicityCheckResult
+    {
+        public bool IsToxic { get; set; }
+        public double Score { get; set; }
+        public string? Label { get; set; }
+        public bool IsAvailable { get; set; }
+        public string? Error { get; set; }
+    }
 }
