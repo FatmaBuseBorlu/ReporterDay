@@ -29,35 +29,42 @@ namespace ReporterDay.PresentationLayer.Controllers
             _articleIdProtector = articleIdProtector;
         }
 
-
+        [HttpGet]
         public IActionResult ArticleDetail(string id)
         {
-            var articleId = _articleIdProtector.Unprotect(id);
-            ViewBag.ArticleId = articleId;
+            if (!_articleIdProtector.TryUnprotect(id, out var articleId))
+                return NotFound();
+
+            ViewBag.i = articleId;
+
             ViewBag.ProtectedArticleId = id;
+
             return View();
         }
-
- 
         [HttpGet]
         public IActionResult CommentsPartial(string id)
         {
-            var articleId = _articleIdProtector.Unprotect(id);
+            if (!_articleIdProtector.TryUnprotect(id, out var articleId))
+                return BadRequest("Geçersiz makale id.");
+
             return ViewComponent("_ArticleDetailCommentsComponentPartial", new { id = articleId });
         }
-
 
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddCommentAjax(AddCommentRequestViewModel model)
         {
-            if (!ModelState.IsValid)
+            if (model == null || string.IsNullOrWhiteSpace(model.CommentDetail))
                 return BadRequest(new { ok = false, message = "Yorum metni boş olamaz." });
 
-            var articleId = _articleIdProtector.Unprotect(model.ProtectedArticleId);
-            var user = await _userManager.GetUserAsync(User);
+            if (string.IsNullOrWhiteSpace(model.ProtectedArticleId) ||
+                !_articleIdProtector.TryUnprotect(model.ProtectedArticleId, out var articleId))
+            {
+                return BadRequest(new { ok = false, message = "Geçersiz makale id." });
+            }
 
+            var user = await _userManager.GetUserAsync(User);
             if (user == null)
                 return Unauthorized(new { ok = false, message = "Giriş yapılmamış." });
 

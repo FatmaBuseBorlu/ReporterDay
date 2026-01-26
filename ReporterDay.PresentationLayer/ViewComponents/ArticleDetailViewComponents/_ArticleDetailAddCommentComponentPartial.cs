@@ -5,9 +5,14 @@ namespace ReporterDay.PresentationLayer.ViewComponents.ArticleDetailViewComponen
 {
     public class _ArticleDetailAddCommentComponentPartial : ViewComponent
     {
-        public IViewComponentResult Invoke(string protectedId)
+        public IViewComponentResult Invoke(string protectedArticleId)
         {
-            return View(new AddCommentRequestViewModel { ProtectedArticleId = protectedId });
+            var model = new AddCommentRequestViewModel
+            {
+                ProtectedArticleId = protectedArticleId
+            };
+
+            return View(model);
         }
     }
 }

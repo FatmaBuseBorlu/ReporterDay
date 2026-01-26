@@ -8,7 +8,9 @@ namespace ReporterDay.PresentationLayer.Extensions
         public static IServiceCollection AddPresentationServices(this IServiceCollection services)
         {
             services.AddDataProtection();
-            services.AddSingleton<IdProtector, ArticleIdProtector>();
+
+            services.AddSingleton<IArticleIdProtector, ArticleIdProtector>();
+
             return services;
         }
     }

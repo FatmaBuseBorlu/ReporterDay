@@ -3,7 +3,7 @@ using System;
 
 namespace ReporterDay.PresentationLayer.Security
 {
-    public sealed class ArticleIdProtector : IArticleIdProtector
+    public class ArticleIdProtector : IArticleIdProtector
     {
         private readonly IDataProtector _protector;
 
@@ -20,7 +20,7 @@ namespace ReporterDay.PresentationLayer.Security
             if (TryUnprotect(protectedId, out var id))
                 return id;
 
-            throw new InvalidOperationException("Geçersiz makale kimliği.");
+            throw new ArgumentException("Geçersiz makale ID.", nameof(protectedId));
         }
 
         public bool TryUnprotect(string protectedId, out int id)

@@ -32,7 +32,6 @@ builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<ArticleContext>();
 
 builder.Services.AddControllersWithViews();
-
 builder.Services.AddPresentationServices();
 
 builder.Services.AddMemoryCache();

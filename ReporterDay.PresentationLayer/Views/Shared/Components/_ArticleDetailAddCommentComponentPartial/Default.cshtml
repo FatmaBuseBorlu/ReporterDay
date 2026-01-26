@@ -38,7 +38,8 @@
                     const res = await fetch(form.action, {
                         method: 'POST',
                         body: new FormData(form),
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        credentials: 'same-origin'
                     });
 
                     if (!res.ok) {
@@ -63,7 +64,8 @@
 
                     if (pid && container) {
                         const html = await fetch('/Article/CommentsPartial?id=' + encodeURIComponent(pid), {
-                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                            credentials: 'same-origin'
                         }).then(r => r.text());
 
                         container.innerHTML = html;
