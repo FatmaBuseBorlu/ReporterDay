@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace ReporterDay.PresentationLayer.ViewComponents.ArticleDetailViewComponents
 {
+    [ViewComponent(Name = "_ArticleDetailRecentArticlesComponentPartial")]
     public class _ArticleDetailRecentArticlesComponentPartial : ViewComponent
     {
         private readonly IArticleService _articleService;
