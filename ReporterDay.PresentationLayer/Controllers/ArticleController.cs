@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ReporterDay.BusinessLayer.Abstract;
 using ReporterDay.EntityLayer.Entities;
+using ReporterDay.PresentationLayer.Models.Articles;
 using ReporterDay.PresentationLayer.Models.Components;
 using ReporterDay.PresentationLayer.Security;
 using System;
@@ -32,14 +33,18 @@ namespace ReporterDay.PresentationLayer.Controllers
         [HttpGet]
         public IActionResult ArticleDetail(string id)
         {
-            if (!_articleIdProtector.TryUnprotect(id, out var articleId))
-                return NotFound();
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest("id boş geldi");
 
-            ViewBag.i = articleId;
+            var articleId = _articleIdProtector.Unprotect(id);
 
-            ViewBag.ProtectedArticleId = id;
+            var vm = new ArticleDetailPageVm
+            {
+                ArticleId = articleId,
+                ProtectedArticleId = id
+            };
 
-            return View();
+            return View(vm);
         }
         [HttpGet]
         public IActionResult CommentsPartial(string id)
