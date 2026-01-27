@@ -1,71 +1,90 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Logging;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using ReporterDay.BusinessLayer.Abstract;
-using ReporterDay.PresentationLayer.Helpers;
-using ReporterDay.PresentationLayer.Models;
+using ReporterDay.EntityLayer.Entities;
+using ReporterDay.PresentationLayer.Models.Articles;
+using ReporterDay.PresentationLayer.Models.Components;
+using ReporterDay.PresentationLayer.Security;
+using System;
+using System.Threading.Tasks;
 
 namespace ReporterDay.PresentationLayer.Controllers
 {
     public class ArticleController : Controller
     {
         private readonly IArticleService _articleService;
+        private readonly ICommentService _commentService;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly IArticleIdProtector _articleIdProtector;
 
-        public ArticleController(IArticleService articleService)
+        public ArticleController(
+            IArticleService articleService,
+            ICommentService commentService,
+            UserManager<AppUser> userManager,
+            IArticleIdProtector articleIdProtector)
         {
             _articleService = articleService;
+            _commentService = commentService;
+            _userManager = userManager;
+            _articleIdProtector = articleIdProtector;
         }
 
-        [HttpGet("/article/{slug}")]
-        public IActionResult ArticleDetail(string slug)
+        [HttpGet]
+        public IActionResult ArticleDetail(string id)
         {
-            var article = _articleService.TGetArticleWithAuthorAndCategoryBySlug(slug);
-            if (article == null) return NotFound();
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest("id boş geldi");
 
-            ViewBag.i = article.ArticleId;
+            var articleId = _articleIdProtector.Unprotect(id);
 
-            return View("ArticleDetail");
-        }
-
-        [HttpGet("/Article/ArticleDetail/{id:int}")]
-        public IActionResult ArticleDetailById(int id)
-        {
-            var article = _articleService.TGetArticlesWithAuthorandCategoriesById(id);
-            if (article == null) return NotFound();
-
-            if (string.IsNullOrWhiteSpace(article.Slug))
+            var vm = new ArticleDetailPageVm
             {
-                article.Slug = SlugHelper.Slugify(article.Title);
-
-                if (string.IsNullOrWhiteSpace(article.Slug))
-                    return NotFound();
-
-                _articleService.TUpdate(article);
-            }
-
-            return Redirect($"/article/{article.Slug}");
-        }
-
-        public IActionResult Index(int page = 1)
-        {
-            int pageSize = 9;
-
-            int totalCount = _articleService.TGetArticleCount();
-            int totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-
-            if (totalPages < 1) totalPages = 1;
-            if (page < 1) page = 1;
-            if (page > totalPages) page = totalPages;
-
-            var articles = _articleService.TGetPagedArticlesWithCategoriesAndAppUsers(page, pageSize);
-
-            var model = new HomeArticleListViewModel
-            {
-                Articles = articles,
-                CurrentPage = page,
-                TotalPages = totalPages
+                ArticleId = articleId,
+                ProtectedArticleId = id
             };
 
-            return View(model);
+            return View(vm);
+        }
+        [HttpGet]
+        public IActionResult CommentsPartial(string id)
+        {
+            if (!_articleIdProtector.TryUnprotect(id, out var articleId))
+                return BadRequest("Geçersiz makale id.");
+
+            return ViewComponent("_ArticleDetailCommentsComponentPartial", new { id = articleId });
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddCommentAjax(AddCommentRequestViewModel model)
+        {
+            if (model == null || string.IsNullOrWhiteSpace(model.CommentDetail))
+                return BadRequest(new { ok = false, message = "Yorum metni boş olamaz." });
+
+            if (string.IsNullOrWhiteSpace(model.ProtectedArticleId) ||
+                !_articleIdProtector.TryUnprotect(model.ProtectedArticleId, out var articleId))
+            {
+                return BadRequest(new { ok = false, message = "Geçersiz makale id." });
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized(new { ok = false, message = "Giriş yapılmamış." });
+
+            var comment = new Comment
+            {
+                ArticleId = articleId,
+                AppUserId = user.Id,
+                CommentDetail = model.CommentDetail.Trim(),
+                CommentDate = DateTime.Now,
+                IsValid = true
+            };
+
+            _commentService.TInsert(comment);
+
+            return Json(new { ok = true });
         }
     }
 }

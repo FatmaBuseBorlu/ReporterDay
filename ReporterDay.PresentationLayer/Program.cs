@@ -1,14 +1,16 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Routing;
 using ReporterDay.BusinessLayer.Abstract;
 using ReporterDay.BusinessLayer.Concrete;
+using ReporterDay.BusinessLayer.Models;
 using ReporterDay.DataAccessLayer.Abstract;
 using ReporterDay.DataAccessLayer.Context;
 using ReporterDay.DataAccessLayer.EntityFramework;
 using ReporterDay.EntityLayer.Entities;
+using ReporterDay.PresentationLayer.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddScoped<ICategoryService, CategoryManager>();
 builder.Services.AddScoped<ICategoryDal, EfCategoryDal>();
 
@@ -26,17 +28,24 @@ builder.Services.AddScoped<ICommentDal, EfCommentDal>();
 
 builder.Services.AddDbContext<ArticleContext>();
 
-builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<ArticleContext>();
+builder.Services.AddIdentity<AppUser, IdentityRole>()
+    .AddEntityFrameworkStores<ArticleContext>();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddPresentationServices();
+
+builder.Services.AddMemoryCache();
+
+builder.Services.Configure<HuggingFaceOptions>(
+    builder.Configuration.GetSection("HuggingFace"));
+
+builder.Services.AddHttpClient<IToxicityService, ToxicityManager>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -48,10 +57,17 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapGet("/_endpoints", (IEnumerable<EndpointDataSource> sources) =>
+{
+    var list = sources.SelectMany(s => s.Endpoints)
+                      .Select(e => e.DisplayName)
+                      .Where(x => !string.IsNullOrWhiteSpace(x));
+
+    return string.Join("\n", list);
+});
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Default}/{action=Index}/{id?}");
 
 app.Run();

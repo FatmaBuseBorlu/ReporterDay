@@ -1,5 +1,10 @@
-﻿@{
+﻿@model ReporterDay.PresentationLayer.Models.Articles.ArticleDetailPageVm
+
+@{
     Layout = null;
+
+    var articleId = Model?.ArticleId ?? 0;
+    var protectedId = Model?.ProtectedArticleId ?? "";
 }
 
 <!DOCTYPE html>
@@ -14,23 +19,43 @@
     <main class="main">
         <div class="container">
             <div class="row">
-                <div class="col-lg-8">
-                    @await Component.InvokeAsync("_ArticleDetailContentComponentPartial", new { id = ViewBag.i })
 
-                    @await Component.InvokeAsync("_ArticleDetailCommentsComponentPartial", new { id = ViewBag.i })
+                @if (articleId <= 0 || string.IsNullOrWhiteSpace(protectedId))
+                {
+                    <div class="col-12">
+                        <div class="alert alert-danger mt-4">
+                            Makale bilgisi alınamadı (id boş geldi). Lütfen liste sayfasından tekrar deneyin.
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-lg-8">
 
-                    @await Component.InvokeAsync("_ArtricleDetailAddCommentComponentPartial", new { id = ViewBag.i })
+                        @await Component.InvokeAsync("_ArticleDetailContentComponentPartial", new { id = articleId })
+
+                        <div id="commentsContainer">
+                            @await Component.InvokeAsync("_ArticleDetailCommentsComponentPartial", new { id = articleId })
+                        </div>
+
+                        @await Component.InvokeAsync("_ArticleDetailAddCommentComponentPartial",
+                        new { protectedArticleId = protectedId })
+
                 </div>
 
                 <div class="col-lg-4 sidebar">
                     <div class="widgets-container">
-                        @await Component.InvokeAsync("_ArticleDetailAboutAuthorComponentPartial", new { id = ViewBag.i })
 
-                        @await Component.InvokeAsync("_ArticleDetailRecentArticlesComponentPartial")
+                        @await Component.InvokeAsync("_ArticleDetailAboutAuthorComponentPartial")
+
+                        @await Component.InvokeAsync("_ArticleDetailRecentArticlesComponentPartial",
+                                                new { currentArticleId = articleId })
 
                         @await Component.InvokeAsync("_ArticleDetailTagListComponentPartial")
+
                     </div>
                 </div>
+                                }
 
             </div>
         </div>

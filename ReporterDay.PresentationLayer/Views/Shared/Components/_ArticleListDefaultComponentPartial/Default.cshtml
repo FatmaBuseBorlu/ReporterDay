@@ -1,4 +1,4 @@
-﻿@model List<ReporterDay.EntityLayer.Entities.Article>
+﻿@model ReporterDay.PresentationLayer.Models.Articles.PagedArticleListVm
 
 <div class="container">
     <div class="row">
@@ -9,7 +9,7 @@
                 <div class="container">
                     <div class="row gy-4">
 
-                        @foreach (var item in Model)
+                        @foreach (var item in Model.Articles)
                         {
                             <div class="col-lg-4">
                                 <article class="position-relative h-100">
@@ -25,28 +25,30 @@
 
                                         <div class="meta d-flex align-items-center">
                                             <div class="d-flex align-items-center">
-                                                <i class="bi bi-person"></i> <span class="ps-2">@item.AppUser.Name @item.AppUser.Surname</span>
+                                                <i class="bi bi-person"></i>
+                                                <span class="ps-2">@item.AuthorFullName</span>
                                             </div>
                                             <span class="px-3 text-black-50">/</span>
                                             <div class="d-flex align-items-center">
-                                                <i class="bi bi-folder2"></i> <span class="ps-2">@item.Category.CategoryName</span>
+                                                <i class="bi bi-folder2"></i>
+                                                <span class="ps-2">@item.CategoryName</span>
                                             </div>
                                         </div>
 
-                                        <p>
-                                            @item.Content.Substring(0, 120)...
-                                        </p>
+                                        <p>@item.Preview</p>
 
                                         <hr>
 
-                                        <a href="/Article/ArticleDetail/@item.ArticleId/" class="readmore stretched-link"><span>Devamını Okuyun</span><i class="bi bi-arrow-right"></i></a>
+                                        <!-- ✅ ID yerine ProtectedId -->
+                                        <a href="@Url.Action("ArticleDetail", "Article", new { id = item.ProtectedId })"
+                                           class="readmore stretched-link">
+                                            <span>Devamını Okuyun</span><i class="bi bi-arrow-right"></i>
+                                        </a>
 
                                     </div>
 
                                 </article>
                             </div>
-
-                            <!-- End post list item -->
                         }
 
                     </div>
@@ -54,26 +56,38 @@
 
             </section><!-- /Blog Posts Section -->
             <!-- Blog Pagination Section -->
-            <section id="blog-pagination" class="blog-pagination section">
+            @if (Model.TotalPages > 1)
+            {
+                <section id="blog-pagination" class="blog-pagination section">
+                    <div class="container">
+                        <div class="d-flex justify-content-center">
+                            <ul>
+                                <li>
+                                    <a href="@(Model.HasPreviousPage? Url.Action("Index", "Default", new { page = Model.CurrentPage - 1 }) : "javascript:void(0)")"
+                                       class="@(Model.HasPreviousPage ? "" : "disabled")">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
 
-                <div class="container">
-                    <div class="d-flex justify-content-center">
-                        <ul>
-                            <li><a href="#"><i class="bi bi-chevron-left"></i></a></li>
-                            <li><a href="#">1</a></li>
-                            <li><a href="#" class="active">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">4</a></li>
-                            <li>...</li>
-                            <li><a href="#">10</a></li>
-                            <li><a href="#"><i class="bi bi-chevron-right"></i></a></li>
-                        </ul>
+                                @for (int i = 1; i <= Model.TotalPages; i++)
+                                {
+                                    <li>
+                                        <a href="@Url.Action("Index", "Default", new { page = i })"
+                                           class="@(i == Model.CurrentPage ? "active" : "")">@i</a>
+                                    </li>
+                                }
+
+                                <li>
+                                    <a href="@(Model.HasNextPage? Url.Action("Index", "Default", new { page = Model.CurrentPage + 1 }) : "javascript:void(0)")"
+                                       class="@(Model.HasNextPage ? "" : "disabled")">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-
-            </section><!-- /Blog Pagination Section -->
-
+                </section>
+            }
         </div>
-
     </div>
 </div>

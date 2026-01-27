@@ -7,9 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Container\" />
-    <Folder Include="ErrorMessages\" />
-    <Folder Include="Logging\" />
+    <Compile Remove="Container\**" />
+    <Compile Remove="ErrorMessages\**" />
+    <Compile Remove="Logging\**" />
+    <EmbeddedResource Remove="Container\**" />
+    <EmbeddedResource Remove="ErrorMessages\**" />
+    <EmbeddedResource Remove="Logging\**" />
+    <None Remove="Container\**" />
+    <None Remove="ErrorMessages\**" />
+    <None Remove="Logging\**" />
   </ItemGroup>
 
   <ItemGroup>
