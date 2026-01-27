@@ -15,17 +15,20 @@ namespace ReporterDay.PresentationLayer.Controllers
     {
         private readonly IArticleService _articleService;
         private readonly ICommentService _commentService;
+        private readonly ICommentModerationService _moderation;
         private readonly UserManager<AppUser> _userManager;
         private readonly IArticleIdProtector _articleIdProtector;
 
         public ArticleController(
             IArticleService articleService,
             ICommentService commentService,
+            ICommentModerationService moderation,
             UserManager<AppUser> userManager,
             IArticleIdProtector articleIdProtector)
         {
             _articleService = articleService;
             _commentService = commentService;
+            _moderation = moderation;
             _userManager = userManager;
             _articleIdProtector = articleIdProtector;
         }
@@ -46,10 +49,11 @@ namespace ReporterDay.PresentationLayer.Controllers
 
             return View(vm);
         }
+
         [HttpGet]
         public IActionResult CommentsPartial(string id)
         {
-            if (!_articleIdProtector.TryUnprotect(id, out var articleId))
+            if (string.IsNullOrWhiteSpace(id) || !_articleIdProtector.TryUnprotect(id, out var articleId))
                 return BadRequest("Geçersiz makale id.");
 
             return ViewComponent("_ArticleDetailCommentsComponentPartial", new { id = articleId });
@@ -73,11 +77,18 @@ namespace ReporterDay.PresentationLayer.Controllers
             if (user == null)
                 return Unauthorized(new { ok = false, message = "Giriş yapılmamış." });
 
+            var text = model.CommentDetail.Trim();
+
+  
+            var decision = await _moderation.CheckAsync(text);
+            if (!decision.Allow)
+                return BadRequest(new { ok = false, message = decision.Message });
+
             var comment = new Comment
             {
                 ArticleId = articleId,
                 AppUserId = user.Id,
-                CommentDetail = model.CommentDetail.Trim(),
+                CommentDetail = text,
                 CommentDate = DateTime.Now,
                 IsValid = true
             };

@@ -23,22 +23,27 @@ namespace ReporterDay.PresentationLayer.ViewComponents.ArticleDetailViewComponen
 
             var tasks = comments.Select(async c =>
             {
-                var check = await _toxicityService.CheckAsync(c.CommentDetail ?? "");
+                var text = (c.CommentDetail ?? "").Trim();
+                var check = await _toxicityService.CheckAsync(text);
 
                 return new CommentListItemViewModel
                 {
                     CommentId = c.CommentId,
-                    CommentDetail = c.CommentDetail ?? "",
+                    CommentDetail = text,
                     CommentDate = c.CommentDate,
                     UserFullName = c.AppUser != null ? $"{c.AppUser.Name} {c.AppUser.Surname}" : "Anonim",
+
                     IsToxic = check.IsToxic,
                     ToxicityScore = check.Score,
-                    ToxicLabel = check.Label,
+                    ToxicLabel = check.Label ?? "",
                     IsCheckAvailable = check.IsAvailable
                 };
             });
 
-            var vm = (await Task.WhenAll(tasks)).ToList();
+            var vm = (await Task.WhenAll(tasks))
+                .OrderByDescending(x => x.CommentDate)
+                .ToList();
+
             return View(vm);
         }
     }

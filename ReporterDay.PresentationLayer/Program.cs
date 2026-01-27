@@ -8,6 +8,7 @@ using ReporterDay.DataAccessLayer.Context;
 using ReporterDay.DataAccessLayer.EntityFramework;
 using ReporterDay.EntityLayer.Entities;
 using ReporterDay.PresentationLayer.Extensions;
+using ReporterDay.PresentationLayer.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,9 @@ builder.Services.AddScoped<ITagDal, EfTagDal>();
 builder.Services.AddScoped<ICommentService, CommentManager>();
 builder.Services.AddScoped<ICommentDal, EfCommentDal>();
 
+builder.Services.AddDataProtection();
+builder.Services.AddScoped<IArticleIdProtector, ArticleIdProtector>();
+
 builder.Services.AddDbContext<ArticleContext>();
 
 builder.Services.AddIdentity<AppUser, IdentityRole>()
@@ -38,6 +42,11 @@ builder.Services.AddMemoryCache();
 
 builder.Services.Configure<HuggingFaceOptions>(
     builder.Configuration.GetSection("HuggingFace"));
+builder.Services.Configure<CommentModerationOptions>(
+    builder.Configuration.GetSection("CommentModeration"));
+
+builder.Services.AddScoped<ICommentModerationService, CommentModerationManager>();
+
 
 builder.Services.AddHttpClient<IToxicityService, ToxicityManager>();
 
@@ -56,6 +65,32 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapGet("/test-config", (IConfiguration cfg, IWebHostEnvironment env) =>
+    {
+        var token = cfg["HuggingFace:ApiToken"];
+        var baseUrl = cfg["HuggingFace:BaseUrl"];
+        var modelId = cfg["HuggingFace:ModelId"];
+
+        return Results.Json(new
+        {
+            env = env.EnvironmentName,
+            hasToken = !string.IsNullOrWhiteSpace(token),
+            tokenPrefix = string.IsNullOrWhiteSpace(token) ? "" : token.Substring(0, Math.Min(6, token.Length)),
+            baseUrl,
+            modelId
+        });
+    });
+
+    app.MapGet("/test-tox", async (IToxicityService tox) =>
+    {
+        var toxic = await tox.CheckAsync("you are an idiot");
+        var clean = await tox.CheckAsync("have a nice day");
+        return Results.Json(new { toxic, clean });
+    });
+}
 
 app.MapGet("/_endpoints", (IEnumerable<EndpointDataSource> sources) =>
 {
