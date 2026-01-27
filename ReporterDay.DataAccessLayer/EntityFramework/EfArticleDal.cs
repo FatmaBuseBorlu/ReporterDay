@@ -64,6 +64,22 @@ namespace ReporterDay.DataAccessLayer.EntityFramework
             return _context.Articles.Include(x=> x.Category).Include(x=>x.AppUser).ToList();
         }
 
+        public Article GetArticleWithAuthorAndCategoryBySlug(string slug)
+        {
+            return _context.Articles
+                .Include(x => x.AppUser)
+                .Include(x => x.Category)
+                .FirstOrDefault(x => x.Slug == slug);
+        }
+
+        public List<Article> GetLastArticles()
+        {
+            return _context.Articles
+                .OrderByDescending(x => x.CreatedDate)
+                .Take(5)
+                .ToList();
+        }
+
         public List<Article> GetPagedArticlesWithCategoriesAndAppUsers(int page, int pageSize)
         {
             int skip = (page - 1) * pageSize;
@@ -75,6 +91,11 @@ namespace ReporterDay.DataAccessLayer.EntityFramework
                 .Skip(skip)
                 .Take(pageSize)
                 .ToList();
+        }
+
+        public bool SlugExists(string slug)
+        {
+            return _context.Articles.Any(x => x.Slug == slug);
         }
     }
 }

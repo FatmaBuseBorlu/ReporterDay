@@ -1,8 +1,163 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model ReporterDay.PresentationLayer.Models.HomeArticleListViewModel
+@{
+    Layout = null;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Home</title>
+
+    <link href="~/ZenBlog-1.0.0/assets/img/favicon.png" rel="icon">
+    <link href="~/ZenBlog-1.0.0/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+
+    <link href="~/ZenBlog-1.0.0/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/ZenBlog-1.0.0/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="~/ZenBlog-1.0.0/assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="~/ZenBlog-1.0.0/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+    <link href="~/ZenBlog-1.0.0/assets/css/main.css" rel="stylesheet">
+</head>
+
+<body class="index-page">
+
+    <header id="header" class="header d-flex align-items-center sticky-top">
+        <div class="container position-relative d-flex align-items-center justify-content-between">
+
+            <a href="@Url.Action("Index", "Home")" class="logo d-flex align-items-center me-auto me-xl-0">
+                <h1 class="sitename">ReporterDay</h1>
+            </a>
+
+            <nav id="navmenu" class="navmenu">
+                <ul>
+                    <li><a href="@Url.Action("Index", "Home")" class="active">Home</a></li>
+                    <li><a href="#">About</a></li>
+                </ul>
+                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+            </nav>
+
+            <div class="header-social-links">
+                <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
+                <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+                <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+            </div>
+
+        </div>
+    </header>
+
+    <main class="main">
+
+        <section class="section">
+            <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+                <div class="row g-5">
+                    <div class="col-12">
+                        <h2 class="mb-4">Latest Articles</h2>
+                    </div>
+
+                    @if (Model?.Articles != null && Model.Articles.Any())
+                    {
+                        foreach (var item in Model.Articles)
+                        {
+                            <div class="col-lg-4 col-md-6">
+                                <div class="post-entry">
+                                    <a href="@Url.Action("ArticleDetail", "Article", new { id = item.ArticleId })">
+                                        <img src="@item.CoverImageUrl" class="img-fluid" alt="">
+                                    </a>
+
+                                    <div class="post-meta">
+                                        <span class="date">Category @item.CategoryId</span>
+                                        <span class="mx-1">•</span>
+                                        <span>@item.CreatedDate.ToString("dd.MM.yyyy")</span>
+                                    </div>
+
+                                    <h2 class="mb-2">
+                                        <a href="@Url.Action("ArticleDetail", "Article", new { id = item.ArticleId })">
+                                            @item.Title
+                                        </a>
+                                    </h2>
+
+                                    <p class="mb-3 d-block">
+                                        @{
+                                            var text = item.Content ?? "";
+                                            var preview = text.Length > 140 ? text.Substring(0, 140) + "..." : text;
+                                        }
+                                        @preview
+                                    </p>
+
+                                    <div class="d-flex align-items-center author">
+                                        <div class="name">
+                                            <h3 class="m-0 p-0">
+                                                @(item.AppUser != null ? (item.AppUser.Name + " " + item.AppUser.Surname) : "Unknown")
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12">
+                            <div class="alert alert-warning">
+                                No article found.
+                            </div>
+                        </div>
+                    }
+
+                    <div class="col-12 mt-4">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+
+                                <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                                    <a class="page-link" href="@Url.Action("Index", "Home", new { page = Model.CurrentPage - 1 })">Previous</a>
+                                </li>
+
+                                @for (int i = 1; i <= Model.TotalPages; i++)
+                                {
+                                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                        <a class="page-link" href="@Url.Action("Index", "Home", new { page = i })">@i</a>
+                                    </li>
+                                }
+
+                                <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                                    <a class="page-link" href="@Url.Action("Index", "Home", new { page = Model.CurrentPage + 1 })">Next</a>
+                                </li>
+
+                            </ul>
+                        </nav>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer id="footer" class="footer dark-background">
+        <div class="container copyright text-center mt-4">
+            <p>© <strong class="px-1 sitename">ReporterDay</strong></p>
+        </div>
+    </footer>
+
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center">
+        <i class="bi bi-arrow-up-short"></i>
+    </a>
+
+    <div id="preloader"></div>
+
+    <script src="~/ZenBlog-1.0.0/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/ZenBlog-1.0.0/assets/vendor/php-email-form/validate.js"></script>
+    <script src="~/ZenBlog-1.0.0/assets/vendor/aos/aos.js"></script>
+    <script src="~/ZenBlog-1.0.0/assets/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="~/ZenBlog-1.0.0/assets/js/main.js"></script>
+
+</body>
+</html>

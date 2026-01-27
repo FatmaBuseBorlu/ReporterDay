@@ -12,6 +12,9 @@ namespace ReporterDay.DataAccessLayer.Abstract
         List<Article> GetArticlesByAuthor(string id);
         int GetArticleCount();
         List<Article> GetPagedArticlesWithCategoriesAndAppUsers(int page, int pageSize);
+        Article GetArticleWithAuthorAndCategoryBySlug(string slug);
+        bool SlugExists(string slug);
+        List<Article> GetLastArticles();
 
     }
 }
