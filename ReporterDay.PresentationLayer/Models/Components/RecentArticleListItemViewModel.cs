@@ -10,6 +10,5 @@ namespace ReporterDay.PresentationLayer.Models.Components
 
         public string ProtectedId { get; set; } = "";
 
-        public string DetailUrl => $"/Article/ArticleDetail/{ProtectedId}";
     }
 }

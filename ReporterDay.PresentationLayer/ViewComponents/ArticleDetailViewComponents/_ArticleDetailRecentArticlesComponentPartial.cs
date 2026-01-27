@@ -22,8 +22,8 @@ namespace ReporterDay.PresentationLayer.ViewComponents.ArticleDetailViewComponen
         public IViewComponentResult Invoke(int currentArticleId)
         {
             var values = _articleService.TGetListAll()
+                .Where(x => x.ArticleId != currentArticleId)       
                 .OrderByDescending(x => x.CreatedDate)
-                .Where(x => x.ArticleId != currentArticleId)
                 .Take(5)
                 .ToList();
 
@@ -34,7 +34,7 @@ namespace ReporterDay.PresentationLayer.ViewComponents.ArticleDetailViewComponen
                 CoverImageUrl = string.IsNullOrWhiteSpace(x.CoverImageUrl)
                     ? Url.Content("~/ZenBlog-1.0.0/assets/img/post-landscape-1.jpg")
                     : x.CoverImageUrl,
-                ProtectedId = _idProtector.Protect(x.ArticleId)
+                ProtectedId = _idProtector.Protect(x.ArticleId)     
             }).ToList();
 
             return View(vm);

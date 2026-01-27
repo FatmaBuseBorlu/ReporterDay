@@ -1,36 +1,62 @@
 ﻿@model List<ReporterDay.PresentationLayer.Models.Components.CommentListItemViewModel>
 
-<h4 class="comments-count">Yorumlar (@(Model?.Count ?? 0))</h4>
+<div class="comments">
+    <h4 class="comments-count">@((Model?.Count ?? 0)) Yorum</h4>
 
-@if (Model == null || Model.Count == 0)
-{
-    <p>Henüz yorum yok.</p>
-}
-else
-{
-    foreach (var c in Model.OrderByDescending(x => x.CommentDate))
+    @if (Model == null || Model.Count == 0)
     {
-        <div class="comment mb-4">
-            <h5 class="mb-1">@c.UserFullName</h5>
-            <small class="text-muted">@c.CommentDate.ToString("dd MMM yyyy")</small>
-
-            <p class="mt-2">@c.CommentDetail</p>
-
-            @if (c.IsCheckAvailable)
-            {
-                if (c.IsToxic)
-                {
-                    <div class="alert alert-warning mt-2">
-                        ⚠️ Bu yorum toksik içerik barındırıyor.
-                        <br />
-                        <small>Skor: @c.ToxicityScore.ToString("0.00") — Etiket: @c.ToxicLabel</small>
-                    </div>
-                }
-            }
-            else
-            {
-                <small class="text-muted">Toksik kontrol şu an yapılamadı.</small>
-            }
-        </div>
+        <div class="text-muted">Henüz yorum yok.</div>
     }
-}
+    else
+    {
+        foreach (var c in Model)
+        {
+            <div class="comment d-flex mb-4">
+                <div class="comment-img me-3">
+                    <img src="~/ZenBlog-1.0.0/assets/img/person-1.jpg" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;">
+                </div>
+
+                <div class="flex-grow-1">
+
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h5 class="mb-1" style="font-size:15px;">
+                                @c.UserFullName
+                            </h5>
+                            <time class="text-muted" style="font-size:12px;">
+                                @c.CommentDate.ToString("dd MMM yyyy HH:mm")
+                            </time>
+                        </div>
+
+                        <div>
+                            @if (!c.IsCheckAvailable)
+                            {
+                                <span class="badge bg-secondary">Kontrol yapılamadı</span>
+                            }
+                            else if (c.IsToxic)
+                            {
+                                <span class="badge bg-danger">Toksik</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Temiz</span>
+                            }
+                        </div>
+                    </div>
+
+                    @if (c.IsCheckAvailable && c.IsToxic)
+                    {
+                        <div class="alert alert-warning mt-2 mb-2" style="padding:8px 12px;">
+                            Bu yorum uygunsuz içerik barındırıyor olabilir.
+                            <span class="text-muted">(Skor: @c.ToxicityScore.ToString("0.000"))</span>
+                        </div>
+                    }
+
+                    <p class="mb-0">
+                        @c.CommentDetail
+                    </p>
+                </div>
+            </div>
+        }
+    }
+</div>
