@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using ReporterDay.BusinessLayer.Abstract;
 using ReporterDay.BusinessLayer.Concrete;
 using ReporterDay.BusinessLayer.Models;
@@ -30,7 +31,8 @@ builder.Services.AddScoped<ICommentDal, EfCommentDal>();
 builder.Services.AddDataProtection();
 builder.Services.AddScoped<IArticleIdProtector, ArticleIdProtector>();
 
-builder.Services.AddDbContext<ArticleContext>();
+builder.Services.AddDbContext<ArticleContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<ArticleContext>();
@@ -46,8 +48,6 @@ builder.Services.Configure<CommentModerationOptions>(
     builder.Configuration.GetSection("CommentModeration"));
 
 builder.Services.AddScoped<ICommentModerationService, CommentModerationManager>();
-
-
 builder.Services.AddHttpClient<IToxicityService, ToxicityManager>();
 
 var app = builder.Build();
