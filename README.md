@@ -71,7 +71,7 @@ ReporterDay/
 Before running the project, make sure the following tools are installed:
 
 - .NET 8 SDK
-- SQL Server, SQL Server Express, or LocalDB
+- SQL Server, SQL Server Express, LocalDB, or SQL Server running in Docker
 - Visual Studio 2022 or Visual Studio Code
 - EF Core CLI tools
 
@@ -91,30 +91,32 @@ dotnet tool update --global dotnet-ef
 
 The project uses SQL Server with EF Core migrations.
 
-The connection string is currently configured in:
+The database connection is read from:
 
 ```text
-ReporterDay.DataAccessLayer/Context/ArticleContext.cs
+ReporterDay.PresentationLayer/appsettings.json
 ```
 
-Current connection string:
+Default local configuration:
 
-```csharp
-Server=DESKTOP-NBRMDOS;initial catalog=ReporterBlogDayDb;integrated security=true;trust server certificate=true
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "Server=localhost;Database=ReporterBlogDayDb;Trusted_Connection=True;TrustServerCertificate=True;"
+}
 ```
 
-Before running the project locally, update the `Server` value according to your SQL Server setup.
+For team or production-like usage, keep machine-specific values out of source control and override the connection string with user secrets:
 
-For SQL Server Express:
+```bash
+dotnet user-secrets init --project ReporterDay.PresentationLayer/ReporterDay.PresentationLayer.csproj
 
-```csharp
-Server=.\\SQLEXPRESS;initial catalog=ReporterBlogDayDb;integrated security=true;trust server certificate=true
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost;Database=ReporterBlogDayDb;Trusted_Connection=True;TrustServerCertificate=True;" --project ReporterDay.PresentationLayer/ReporterDay.PresentationLayer.csproj
 ```
 
-For LocalDB:
+If you use SQL Server in Docker, use a SQL authentication connection string instead:
 
-```csharp
-Server=(localdb)\\MSSQLLocalDB;initial catalog=ReporterBlogDayDb;integrated security=true;trust server certificate=true
+```bash
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost,1433;Database=ReporterBlogDayDb;User Id=sa;Password=Your_password123;TrustServerCertificate=True;" --project ReporterDay.PresentationLayer/ReporterDay.PresentationLayer.csproj
 ```
 
 Apply migrations:
@@ -212,10 +214,10 @@ In development mode, there are also diagnostic endpoints:
 - AI-assisted comment moderation
 - External API integration with HttpClient
 - MemoryCache usage for repeated moderation checks
+- Environment-based configuration with `appsettings.json` and user secrets
 
 ## Future Improvements
 
-- Move the SQL Server connection string to `appsettings.json`
 - Add role-based admin authorization
 - Add seed data for categories, sliders, and sample articles
 - Add pagination and search for article lists
